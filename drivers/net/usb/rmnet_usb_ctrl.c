@@ -1498,7 +1498,7 @@ int rmnet_usb_ctrl_init(void)
 {
 	struct rmnet_ctrl_dev	*dev;
 	int			n;
-	int			status;
+	int			status = 0;
 	int			ret = 0;
 
 	
