@@ -71,6 +71,8 @@
 #define LED_ERR(fmt, ...) \
 		printk(KERN_ERR "[LED][ERR]" fmt, ##__VA_ARGS__)
 
+#define PWM_PERIOD 500 //2Khz = 500uS period
+
 static struct workqueue_struct *g_led_work_queue;
 struct wake_lock pmic_led_wake_lock;
 static struct pm8xxx_led_data *pm8xxx_leds	, *for_key_led_data, *green_back_led_data, *amber_back_led_data;
@@ -220,7 +222,7 @@ static void pm8xxx_led_current_set_flagged(struct led_classdev *led_cdev, enum l
 			pm8xxx_pwm_lut_enable(led->pwm_led, 0);
 			pm8xxx_pwm_lut_enable(led->pwm_led, 1);
 		} else {
-			pwm_config(led->pwm_led, 6400 * led->pwm_coefficient / 100, 6400);
+			pwm_config(led->pwm_led, PWM_PERIOD * led->pwm_coefficient / 100, PWM_PERIOD);
 			pwm_enable(led->pwm_led);
 		}
 	} else {
@@ -333,7 +335,7 @@ static void pm8xxx_led_gpio_set(struct led_classdev *led_cdev, enum led_brightne
 	if (brightness) {
 		if (led->gpio_status_switch != NULL)
 			led->gpio_status_switch(1);
-		pwm_config(led->pwm_led, 6400 * led->pwm_coefficient / 100, 6400);
+		pwm_config(led->pwm_led, PWM_PERIOD * led->pwm_coefficient / 100, PWM_PERIOD);
 		pwm_enable(led->pwm_led);
 		if(led->led_sync) {
 			if 	(!strcmp(led->cdev.name, "green")) {
@@ -519,7 +521,7 @@ static ssize_t pm8xxx_led_blink_store(struct device *dev,
 		if (led_cdev->brightness) {
 			if (ldata->gpio_status_switch != NULL)
 				ldata->gpio_status_switch(1);
-			pwm_config(ldata->pwm_led, 6400 * ldata->pwm_coefficient / 100, 6400);
+			pwm_config(ldata->pwm_led, PWM_PERIOD * ldata->pwm_coefficient / 100, PWM_PERIOD);
 			pwm_enable(ldata->pwm_led);
 
 			if(ldata->led_sync) {
